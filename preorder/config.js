@@ -1,1 +1,1 @@
-export const preorderTokenAddress = "0x34164CFc5C6c8A53318e475d0aA214dd371b43f1"
+export const preorderTokenAddress = "0xE9149BCb58b64A2918B21E18588916921e157023"

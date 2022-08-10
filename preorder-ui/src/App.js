@@ -85,6 +85,21 @@ function App() {
                 >
                     Buy Preorder NFT
                 </button>
+                <br></br>
+                <button
+                    style={{
+                        height: "60px",
+                        width: "120px",
+                        background: "#FF7373",
+                        borderRadius: "10px",
+                        marginTop: "10px",
+                        color: "white",
+                        fontWeight: "bold",
+                    }}
+                    onClick={handleBuyClick}
+                >
+                    Swap to Land
+                </button>
             </div>
         </div>
     );

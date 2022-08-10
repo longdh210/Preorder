@@ -11,5 +11,8 @@ module.exports = {
             accounts: [key.PRIVATE_KEY],
         },
     },
-    solidity: "0.8.9",
+    etherscan: {
+        apiKey: key.API_KEY,
+    },
+    solidity: "0.8.4",
 };
