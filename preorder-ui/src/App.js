@@ -5,18 +5,23 @@ import { ethers } from "ethers";
 import ContractABI from "./artifacts/contracts/PreorderToken.sol/PreorderToken.json";
 import { preorderTokenAddress } from "./config";
 import { balanceOf } from "./components/balance";
+import { balanceOfLand } from "./components/balanceLand";
 import { useEffect, useState } from "react";
 
 function App() {
+    const [amount, setAmount] = useState("");
+    const [tokenId, setTokenId] = useState("");
     const [currentAddress, setCurrentAddress] = useState(null);
-    const [balance, setBalance] = useState(0);
+    const [balancePreorder, setBalancePreorder] = useState(0);
+    const [balanceLand, setBalanceLand] = useState(0);
 
     useEffect(() => {
         if (window.ethereum) {
             window.ethereum
                 .request({ method: "eth_requestAccounts" })
                 .then(async (res) => {
-                    setBalance(await balanceOf(res[0]));
+                    setBalancePreorder(await balanceOf(res[0]));
+                    setBalanceLand(await balanceOfLand(res[0]));
                     setCurrentAddress(res[0]);
                 });
         }
@@ -24,35 +29,91 @@ function App() {
 
     window.ethereum.on("accountsChanged", async function (accounts) {
         setCurrentAddress(accounts[0]);
-        setBalance(await balanceOf(accounts[0]));
+        setBalancePreorder(await balanceOf(accounts[0]));
+        setBalanceLand(await balanceOfLand(accounts[0]));
     });
 
     const handleBuyClick = async () => {
-        const web3modal = new Web3Modal();
-        const connection = await web3modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
-        const signerAddress = await signer.getAddress();
+        if (!amount) {
+            alert("Enter amount");
+        } else {
+            const web3modal = new Web3Modal();
+            const connection = await web3modal.connect();
+            const provider = new ethers.providers.Web3Provider(connection);
+            const signer = provider.getSigner();
+            const signerAddress = await signer.getAddress();
 
-        let valuePass = ethers.utils.parseUnits("0.1", "ether");
-        valuePass = valuePass.toString();
+            const valueAmount = 0.01 * amount;
 
-        let contract = new ethers.Contract(
-            preorderTokenAddress,
-            ContractABI.abi,
-            signer
-        );
-        let transaction = await contract.safeMint(signerAddress, {
-            value: valuePass,
-        });
-        await transaction.wait();
+            let valuePass = ethers.utils.parseUnits(`${valueAmount}`, "ether");
+            valuePass = valuePass.toString();
 
-        alert("Add address successfully");
-        // setCurrentAddress(signerAddress);
+            let contract = new ethers.Contract(
+                preorderTokenAddress,
+                ContractABI.abi,
+                signer
+            );
+            let transaction = await contract.safeMintMany(
+                signerAddress,
+                amount,
+                {
+                    value: valuePass,
+                }
+            );
+            await transaction.wait();
+
+            alert("Buy token successfully");
+        }
+    };
+
+    const handleSwapClick = async () => {
+        if (!tokenId) {
+            alert("Enter token id");
+        } else {
+            const web3modal = new Web3Modal();
+            const connection = await web3modal.connect();
+            const provider = new ethers.providers.Web3Provider(connection);
+            const signer = provider.getSigner();
+            // const signerAddress = await signer.getAddress();
+
+            const valueAmount = 0.01 * amount;
+
+            let valuePass = ethers.utils.parseUnits(`${valueAmount}`, "ether");
+            valuePass = valuePass.toString();
+
+            let contract = new ethers.Contract(
+                preorderTokenAddress,
+                ContractABI.abi,
+                signer
+            );
+            let transaction = await contract.burn(tokenId);
+            await transaction.wait();
+
+            alert("Swap token successfully");
+        }
     };
 
     return (
         <div className='App'>
+            <div className='balance'>
+                <label
+                    style={{
+                        color: "white",
+                        fontSize: "30px",
+                    }}
+                >
+                    Preorder Token Balance: {balancePreorder.toString()}
+                </label>
+                <br></br>
+                <label
+                    style={{
+                        color: "white",
+                        fontSize: "30px",
+                    }}
+                >
+                    Land Token Balance: {balanceLand.toString()}
+                </label>
+            </div>
             <div className='content'>
                 <h1
                     style={{
@@ -62,14 +123,15 @@ function App() {
                 >
                     Preorder
                 </h1>
-                <label
+                <br></br>
+                <input
+                    placeholder='Amount of token want to buy'
                     style={{
-                        color: "white",
-                        fontSize: "50px",
+                        height: "30px",
+                        width: "200px",
                     }}
-                >
-                    NFT Balance: {balance.toString()}
-                </label>
+                    onChange={(e) => setAmount(e.target.value)}
+                ></input>
                 <br></br>
                 <button
                     style={{
@@ -86,6 +148,16 @@ function App() {
                     Buy Preorder NFT
                 </button>
                 <br></br>
+                <input
+                    placeholder='Token id want to swap'
+                    style={{
+                        height: "30px",
+                        width: "200px",
+                        marginTop: "10px",
+                    }}
+                    onChange={(e) => setTokenId(e.target.value)}
+                ></input>
+                <br></br>
                 <button
                     style={{
                         height: "60px",
@@ -96,7 +168,7 @@ function App() {
                         color: "white",
                         fontWeight: "bold",
                     }}
-                    onClick={handleBuyClick}
+                    onClick={handleSwapClick}
                 >
                     Swap to Land
                 </button>

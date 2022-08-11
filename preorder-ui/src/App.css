@@ -13,3 +13,9 @@
   transform: translate(-50%, -50%);
   text-align: center;
 }
+
+.balance {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}

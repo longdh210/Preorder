@@ -48,7 +48,6 @@ contract Land is
         string memory uri = string(abi.encodePacked());
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
-        tokenLockedFromTimestamp[tokenId] = block.timestamp + (90 days);
     }
 
     function safeMintMany(address to, uint256 amount) public onlyOwner {
@@ -59,8 +58,16 @@ contract Land is
             string memory uri = string(abi.encodePacked());
             _safeMint(to, tokenId);
             _setTokenURI(tokenId, uri);
-            tokenLockedFromTimestamp[tokenId] = block.timestamp + (90 days);
         }
+    }
+
+    function ownerTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) external onlyOwner {
+        safeTransferFrom(from, to, tokenId);
+        tokenLockedFromTimestamp[tokenId] = block.timestamp + (90 days);
     }
 
     function _beforeTokenTransfer(
@@ -70,7 +77,7 @@ contract Land is
     ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
         require(
             tokenLockedFromTimestamp[tokenId] < block.timestamp,
-            "Token locked for 3 months"
+            "Token locked"
         );
         super._beforeTokenTransfer(from, to, tokenId);
     }

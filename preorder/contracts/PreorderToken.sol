@@ -14,7 +14,7 @@ contract PreorderToken is ERC721 {
 
     uint256 public constant MAX_SUPPLY = 1000;
 
-    event Burn(uint256 indexed tokenId);
+    event Burn(address indexed burner, uint256 indexed tokenId);
 
     constructor() ERC721("PreorderToken", "POT") {
         owner = payable(msg.sender);
@@ -66,6 +66,6 @@ contract PreorderToken is ERC721 {
             "ERC721: caller is not token owner nor approved"
         );
         _burn(tokenId);
-        emit Burn(tokenId);
+        emit Burn(msg.sender, tokenId);
     }
 }
