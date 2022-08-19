@@ -14,6 +14,16 @@ function App() {
     const [currentAddress, setCurrentAddress] = useState(null);
     const [balancePreorder, setBalancePreorder] = useState(0);
     const [balanceLand, setBalanceLand] = useState(0);
+    const [amountToken, setAmountToken] = useState(0);
+
+    useEffect(() => {
+        async function fetcher() {
+            const response = await fetch("http://localhost:3000/check");
+            const contract = await response.json();
+            setAmountToken(contract);
+        }
+        fetcher();
+    }, []);
 
     useEffect(() => {
         if (window.ethereum) {
@@ -69,6 +79,8 @@ function App() {
     const handleSwapClick = async () => {
         if (!tokenId) {
             alert("Enter token id");
+        } else if (Number(tokenId) > Number(amountToken)) {
+            alert("The id exceeds total supply");
         } else {
             const web3modal = new Web3Modal();
             const connection = await web3modal.connect();

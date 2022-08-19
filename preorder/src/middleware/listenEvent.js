@@ -1,8 +1,8 @@
 const Web3 = require("web3");
-const ownerKey = require("../key.json");
-const { preorderTokenAddress, landTokenAddress } = require("../config");
-const PreorderContract = require("../artifacts/contracts/PreorderToken.sol/PreorderToken.json");
-const LandContract = require("../artifacts/contracts/Land.sol/Land.json");
+const ownerKey = require("../../key.json");
+const { preorderTokenAddress, landTokenAddress } = require("../../config");
+const PreorderContract = require("../../artifacts/contracts/PreorderToken.sol/PreorderToken.json");
+const LandContract = require("../../artifacts/contracts/Land.sol/Land.json");
 
 // Create instant
 const web3 = new Web3(
@@ -17,13 +17,6 @@ const landContract = new web3.eth.Contract(LandContract.abi, landTokenAddress);
 
 const { address: admin } = web3.eth.accounts.wallet.add(ownerKey.PRIVATE_KEY);
 
-// const run = async () => {
-//     let gasPrice = await web3.eth.getGasPrice();
-//     gasPrice = gasPrice + 10;
-//     console.log(gasPrice);
-// };
-
-// run();
 preorderContract.events
     .Burn({}, function (error, event) {
         // console.log("Event:", event);
@@ -53,8 +46,8 @@ preorderContract.events
         const receipt = await web3.eth.sendTransaction(txData);
         console.log(`Transaction hash: ${receipt.transactionHash}`);
         console.log(`
-            Processed transfer:
-            - from ${admin}
-            - to ${burner}
-        `);
+                Processed transfer:
+                - from ${admin}
+                - to ${burner}
+            `);
     });
