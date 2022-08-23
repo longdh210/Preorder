@@ -14,7 +14,7 @@ async function main() {
     await land.deployed();
 
     console.log("Preorder token deployed to:", preorder.address);
-    console.log("Preorder token deployed to:", land.address);
+    console.log("Land token deployed to:", land.address);
 
     fs.writeFileSync(
         "./config.js",

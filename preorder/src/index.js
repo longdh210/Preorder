@@ -31,29 +31,40 @@ preorderContract.events
         // Get data from event
         const { burner, tokenId } = event.returnValues;
 
-        const tx = landContract.methods.ownerTransfer(admin, burner, tokenId);
-        let [gasPrice, gasCost] = await Promise.all([
-            web3.eth.getGasPrice(),
-            tx.estimateGas({ from: admin }),
-        ]);
+        const addressOwnerToken = await landContract.methods
+            .ownerOf(tokenId)
+            .call();
+        if (addressOwnerToken == ownerKey.PUBLIC_KEY) {
+            const tx = landContract.methods.ownerTransfer(
+                admin,
+                burner,
+                tokenId
+            );
+            let [gasPrice, gasCost] = await Promise.all([
+                web3.eth.getGasPrice(),
+                tx.estimateGas({ from: admin }),
+            ]);
 
-        gasPrice += 10;
+            gasPrice += 10;
 
-        const data = tx.encodeABI();
-        const txData = {
-            from: admin,
-            to: landContract.options.address,
-            data,
-            gas: gasCost,
-            gasPrice,
-        };
-        const receipt = await web3.eth.sendTransaction(txData);
-        console.log(`Transaction hash: ${receipt.transactionHash}`);
-        console.log(`
+            const data = tx.encodeABI();
+            const txData = {
+                from: admin,
+                to: landContract.options.address,
+                data,
+                gas: gasCost,
+                gasPrice,
+            };
+            const receipt = await web3.eth.sendTransaction(txData);
+            console.log(`Transaction hash: ${receipt.transactionHash}`);
+            console.log(`
                 Processed transfer:
                 - from ${admin}
                 - to ${burner}
             `);
+        } else {
+            console.log("Token have been transferred");
+        }
     });
 
 app.use(cors());

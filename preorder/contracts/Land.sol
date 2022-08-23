@@ -25,6 +25,8 @@ contract Land is
 
     mapping(uint256 => uint256) public tokenLockedFromTimestamp;
 
+    event Swap(address indexed to, uint256 indexed tokenId);
+
     constructor(address owner) ERC721("Land", "LAND") {
         super._transferOwnership(owner);
     }
@@ -68,6 +70,7 @@ contract Land is
     ) external onlyOwner {
         safeTransferFrom(from, to, tokenId);
         tokenLockedFromTimestamp[tokenId] = block.timestamp + (90 days);
+        emit Swap(to, tokenId);
     }
 
     function _beforeTokenTransfer(
