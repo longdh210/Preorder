@@ -3,14 +3,15 @@ const fs = require("fs");
 const key = require("../key.json");
 
 async function main() {
-    const Preorder = await hre.ethers.getContractFactory("PreorderToken");
-    const preorder = await Preorder.deploy();
-
     const Land = await hre.ethers.getContractFactory("Land");
     const land = await Land.deploy(key.OWNER);
 
-    await preorder.deployed();
     await land.deployed();
+
+    const Preorder = await hre.ethers.getContractFactory("PreorderToken");
+    const preorder = await Preorder.deploy(land.address);
+
+    await preorder.deployed();
 
     console.log("Preorder token deployed to:", preorder.address);
     console.log("Land token deployed to:", land.address);

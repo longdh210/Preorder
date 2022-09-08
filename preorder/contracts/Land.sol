@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
+import "./PreorderToken.sol";
 
 contract Land is
     ERC721,
@@ -27,8 +28,17 @@ contract Land is
 
     event Swap(address indexed to, uint256 indexed tokenId);
 
+    PreorderToken preorderToken;
+
     constructor(address owner) ERC721("Land", "LAND") {
         super._transferOwnership(owner);
+    }
+
+    function setPreorderContract(address preorderTokenAddress)
+        public
+        onlyOwner
+    {
+        preorderToken = PreorderToken(preorderTokenAddress);
     }
 
     function _baseURI() internal pure override returns (string memory) {
@@ -44,23 +54,21 @@ contract Land is
         _unpause();
     }
 
-    function safeMint(address to) public onlyOwner {
+    function safeMint(address to, uint256 preorderTokenId) public {
+        require(
+            preorderToken.checkBurn(to) == 1,
+            "You have not burn Preorder token yet"
+        );
+        require(
+            tx.origin == preorderToken.ownerOf(preorderTokenId),
+            "You can not mint Land token"
+        );
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         string memory uri = string(abi.encodePacked());
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
-    }
-
-    function safeMintMany(address to, uint256 amount) public onlyOwner {
-        uint256 tokenId;
-        for (uint8 i = 0; i < amount; i++) {
-            _tokenIdCounter.increment();
-            tokenId = _tokenIdCounter.current();
-            string memory uri = string(abi.encodePacked());
-            _safeMint(to, tokenId);
-            _setTokenURI(tokenId, uri);
-        }
+        tokenLockedFromTimestamp[tokenId] = block.timestamp + (90 days);
     }
 
     function ownerTransfer(

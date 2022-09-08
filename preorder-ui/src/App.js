@@ -6,7 +6,6 @@ import ContractABI from "./artifacts/contracts/PreorderToken.sol/PreorderToken.j
 import { preorderTokenAddress } from "./config";
 import { balanceOf } from "./components/balance";
 import { balanceOfLand } from "./components/balanceLand";
-import { totalSupply } from "./components/totalSupply";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -15,7 +14,6 @@ function App() {
     const [currentAddress, setCurrentAddress] = useState(null);
     const [balancePreorder, setBalancePreorder] = useState(0);
     const [balanceLand, setBalanceLand] = useState(0);
-    const [totalSupplyAmount, setTotalSupplyAmount] = useState(0);
 
     useEffect(() => {
         if (window.ethereum) {
@@ -25,7 +23,6 @@ function App() {
                     setBalancePreorder(await balanceOf(res[0]));
                     setBalanceLand(await balanceOfLand(res[0]));
                     setCurrentAddress(res[0]);
-                    setTotalSupplyAmount(await totalSupply());
                 });
         }
     }, []);
@@ -78,8 +75,6 @@ function App() {
             alert("Please enter number !");
         } else if (!tokenId) {
             alert("Enter token id");
-        } else if (Number(tokenId) > Number(totalSupplyAmount)) {
-            alert("The id exceeds total supply");
         } else {
             const web3modal = new Web3Modal();
             const connection = await web3modal.connect();

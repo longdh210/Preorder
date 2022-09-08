@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./Land.sol";
 
 contract PreorderToken is ERC721 {
     using Counters for Counters.Counter;
@@ -10,14 +11,19 @@ contract PreorderToken is ERC721 {
 
     address payable public owner;
 
-    uint256 private _fee = 0 ether;
+    uint256 private _fee = 0.01 ether;
 
     uint256 public constant MAX_SUPPLY = 1000;
 
+    mapping(address => uint256) public checkBurn;
+
     event Burn(address indexed burner, uint256 indexed tokenId);
 
-    constructor() ERC721("PreorderToken", "POT") {
+    Land landToken;
+
+    constructor(address landTokenAddress) ERC721("PreorderToken", "POT") {
         owner = payable(msg.sender);
+        landToken = Land(landTokenAddress);
     }
 
     function getFee() public view returns (uint256) {
@@ -65,6 +71,9 @@ contract PreorderToken is ERC721 {
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: caller is not token owner nor approved"
         );
+        checkBurn[msg.sender] = 1;
+        landToken.safeMint(msg.sender, tokenId);
+        checkBurn[msg.sender] = 2;
         _burn(tokenId);
         emit Burn(msg.sender, tokenId);
     }
