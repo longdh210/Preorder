@@ -10,7 +10,7 @@ contract PreorderToken is ERC721 {
 
     address payable public owner;
 
-    uint256 private _fee = 0.01 ether;
+    uint256 private _fee = 0 ether;
 
     uint256 public constant MAX_SUPPLY = 1000;
 

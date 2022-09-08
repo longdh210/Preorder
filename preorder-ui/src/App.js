@@ -37,8 +37,12 @@ function App() {
     });
 
     const handleBuyClick = async () => {
-        if (!amount) {
+        if (isNaN(amount)) {
+            alert("Please enter number !");
+        } else if (!amount) {
             alert("Enter amount");
+        } else if (Number(amount) > 100) {
+            alert("Mint more than allowed");
         } else {
             const web3modal = new Web3Modal();
             const connection = await web3modal.connect();
@@ -70,7 +74,9 @@ function App() {
     };
 
     const handleSwapClick = async () => {
-        if (!tokenId) {
+        if (isNaN(tokenId)) {
+            alert("Please enter number !");
+        } else if (!tokenId) {
             alert("Enter token id");
         } else if (Number(tokenId) > Number(totalSupplyAmount)) {
             alert("The id exceeds total supply");

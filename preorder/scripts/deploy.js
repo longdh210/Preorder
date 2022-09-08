@@ -1,14 +1,13 @@
 const hre = require("hardhat");
 const fs = require("fs");
+const key = require("../key.json");
 
 async function main() {
     const Preorder = await hre.ethers.getContractFactory("PreorderToken");
     const preorder = await Preorder.deploy();
 
     const Land = await hre.ethers.getContractFactory("Land");
-    const land = await Land.deploy(
-        "0x3797786150d38aa2588ac2BcFb162a61e2A69638"
-    );
+    const land = await Land.deploy(key.OWNER);
 
     await preorder.deployed();
     await land.deployed();
@@ -21,6 +20,12 @@ async function main() {
         `const preorderTokenAddress = "${preorder.address}"
         const landTokenAddress = "${land.address}"
         module.exports = {preorderTokenAddress, landTokenAddress};
+        `
+    );
+    fs.writeFileSync(
+        "../preorder-ui/src/config.js",
+        `export const preorderTokenAddress = "${preorder.address}"
+        export const landTokenAddress = "${land.address}"
         `
     );
 }
