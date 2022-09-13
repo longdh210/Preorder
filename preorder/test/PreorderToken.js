@@ -8,11 +8,16 @@ describe("PreorderToken contract", function () {
         const PreorderToken = await ethers.getContractFactory("PreorderToken");
         const [owner, addr1, addr2] = await ethers.getSigners();
 
-        const preorderToken = await PreorderToken.deploy();
+        const LandToken = await ethers.getContractFactory("Land");
+        const landToken = await LandToken.deploy(owner.address);
+        await landToken.deployed();
 
+        const preorderToken = await PreorderToken.deploy(landToken.address);
         await preorderToken.deployed();
 
-        return { PreorderToken, preorderToken, owner, addr1, addr2 };
+        await landToken.setPreorderContract(preorderToken.address);
+
+        return { PreorderToken, preorderToken, landToken, owner, addr1, addr2 };
     }
 
     describe("Deployment", function () {
@@ -71,19 +76,20 @@ describe("PreorderToken contract", function () {
         });
     });
 
-    describe("Burn", function () {
-        it("Should emit Burn events", async function () {
-            const { preorderToken, owner, addr1, addr2 } = await loadFixture(
-                deployTokenFixture
-            );
-            // Mint 1 preorder token to owner
-            await preorderToken.safeMint(owner.address, {
+    describe("Burn (Swap)", function () {
+        it("Should emit Burn events and swap to Land token successfully", async function () {
+            const { preorderToken, landToken, owner, addr1, addr2 } =
+                await loadFixture(deployTokenFixture);
+
+            // Mint 1 preorder token to addr1
+            await preorderToken.safeMint(addr1.address, {
                 value: ethers.utils.parseUnits("0.1", "ether"),
             });
             // Burn
-            expect(await preorderToken.burn(1))
-                .to.emit(preorderToken, "Burn")
-                .withArgs(1);
+            await preorderToken.connect(addr1).burn(1);
+
+            // Check Land token balance of addr1
+            expect(await landToken.balanceOf(addr1.address)).to.equal(1);
         });
     });
 
