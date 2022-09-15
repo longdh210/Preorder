@@ -9,7 +9,7 @@ async function main() {
     await land.deployed();
 
     const Preorder = await hre.ethers.getContractFactory("PreorderToken");
-    const preorder = await Preorder.deploy(land.address);
+    const preorder = await Preorder.deploy(key.OWNER, land.address);
 
     await preorder.deployed();
 

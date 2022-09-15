@@ -12,7 +12,10 @@ describe("PreorderToken contract", function () {
         const landToken = await LandToken.deploy(owner.address);
         await landToken.deployed();
 
-        const preorderToken = await PreorderToken.deploy(landToken.address);
+        const preorderToken = await PreorderToken.deploy(
+            owner.address,
+            landToken.address
+        );
         await preorderToken.deployed();
 
         await landToken.setPreorderContract(preorderToken.address);

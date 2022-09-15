@@ -21,8 +21,15 @@ contract PreorderToken is ERC721 {
 
     Land landToken;
 
-    constructor(address landTokenAddress) ERC721("PreorderToken", "POT") {
-        owner = payable(msg.sender);
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Ownable: caller is not the owner");
+        _;
+    }
+
+    constructor(address payable _owner, address landTokenAddress)
+        ERC721("PreorderToken", "POT")
+    {
+        owner = _owner;
         landToken = Land(landTokenAddress);
     }
 
@@ -30,7 +37,7 @@ contract PreorderToken is ERC721 {
         return _fee;
     }
 
-    function setFee(uint256 fee) public {
+    function setFee(uint256 fee) public onlyOwner {
         _fee = fee * (1e17);
     }
 
@@ -58,8 +65,7 @@ contract PreorderToken is ERC721 {
         }
     }
 
-    function withdraw() public {
-        require(msg.sender == owner, "Ownable: caller is not the owner");
+    function withdraw() public onlyOwner {
         uint256 amount = address(this).balance;
 
         (bool success, ) = owner.call{value: amount}("");
