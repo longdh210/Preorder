@@ -1,15 +1,18 @@
 const hre = require("hardhat");
 const fs = require("fs");
 const key = require("../key.json");
+const { ethers } = require("hardhat");
 
 async function main() {
+    const [owner, addr1, addr2] = await ethers.getSigners();
+
     const Land = await hre.ethers.getContractFactory("Land");
-    const land = await Land.deploy(key.OWNER);
+    const land = await Land.deploy(owner.address);
 
     await land.deployed();
 
     const Preorder = await hre.ethers.getContractFactory("PreorderToken");
-    const preorder = await Preorder.deploy(key.OWNER, land.address);
+    const preorder = await Preorder.deploy(owner.address, land.address);
 
     await preorder.deployed();
 

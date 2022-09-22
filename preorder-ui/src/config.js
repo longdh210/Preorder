@@ -1,3 +1,3 @@
-export const preorderTokenAddress = "0xA5054635D8E696eEDe9C4844094CA85108b983e5"
-        export const landTokenAddress = "0xDa224BeBA0fA7346DBF4f27746F09fE4923971E2"
+export const preorderTokenAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+        export const landTokenAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         
