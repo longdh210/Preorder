@@ -13,8 +13,6 @@ contract PreorderToken is ERC721 {
 
     uint256 private _fee = 0.01 ether;
 
-    uint256 public constant MAX_SUPPLY = 1000;
-
     mapping(address => uint256) public checkBurn;
 
     event Burn(address indexed burner, uint256 indexed tokenId);
@@ -42,8 +40,6 @@ contract PreorderToken is ERC721 {
     }
 
     function safeMint(address to) public payable {
-        uint256 startId = _tokenIdCounter.current();
-        require(startId <= MAX_SUPPLY, "Only supply 1000 Preorder Token");
         require(msg.value >= _fee, "Not enough balance");
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
@@ -51,11 +47,6 @@ contract PreorderToken is ERC721 {
     }
 
     function safeMintMany(address to, uint256 amount) public payable {
-        uint256 startId = _tokenIdCounter.current();
-        require(
-            startId + amount <= MAX_SUPPLY,
-            "Only supply 1000 Preorder Token"
-        );
         require(msg.value >= amount * _fee, "Not enough balance");
         uint256 tokenId;
         for (uint8 i = 0; i < amount; i++) {
